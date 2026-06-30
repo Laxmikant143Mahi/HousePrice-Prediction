@@ -1,6 +1,6 @@
 # California House Price Prediction API
 
-A production-ready, interview-friendly Machine Learning API that predicts median home values in California block groups. This project serves as an excellent reference for integrating scikit-learn models with FastAPI, featuring strict Pydantic validation, complete Swagger UI integration, and downloadable batch prediction services.
+A production-ready, interview-friendly Machine Learning API that predicts median home values in California block groups. This project serves as an excellent reference for integrating scikit-learn models with FastAPI, featuring strict Pydantic V2 validation, complete Swagger UI integration, a modern mobile-responsive light-theme dashboard, and downloadable batch CSV prediction pipelines.
 
 ---
 
@@ -10,21 +10,24 @@ This project loads the classical **California Housing Dataset** from `scikit-lea
 
 It is designed to demonstrate:
 1. **Machine Learning Pipeline**: Data loading, exploration, train-test splitting (80-20), model training, evaluation (MAE, R² score), and model serialization using `joblib`.
-2. **REST API Design**: Endpoints for server status, health diagnostics (loading metrics dynamically), single-item predictions, and bulk CSV file prediction outputs.
-3. **Data Validation**: Strict type enforcement and business-logic boundary validation using Pydantic V2 (`Field` constraints like positive-only inputs and coordinate limit bounds).
-4. **Reliability**: Structured exception handling (returning standard `HTTPException` codes) and zero runtime code warnings.
+2. **Interactive UI Dashboard**: A sleek, mobile-friendly light-theme dashboard built with Vanilla HTML, CSS, and JS, served dynamically at the root endpoint.
+3. **REST API Design**: Endpoints for server status, health diagnostics (loading metrics dynamically), single-item predictions, and bulk CSV file prediction outputs.
+4. **Data Validation**: Strict type enforcement and business-logic boundary validation using Pydantic V2 (`Field` constraints like positive-only inputs and coordinate limit bounds).
+5. **Reliability**: Structured exception handling (returning standard `HTTPException` codes) and zero runtime code warnings.
 
 ---
 
 ## Features
 
+- **Minimal Responsive UI (`index.html`)**: Beautiful, mobile-friendly frontend served dynamically on `GET /` with sliders for single prediction and drag-and-drop file uploader for bulk batches.
 - **Data Exploration Script (`explore.py`)**: Quick Exploratory Data Analysis (EDA) showcasing data shape, features, and descriptive statistics.
 - **Model Training Pipeline (`train.py`)**: Automated model building and serialization. Saves metrics like MAE and R² dynamically to power the API dashboard.
 - **FastAPI Endpoints**:
-  - `GET /`: Health and heartbeat check.
+  - `GET /`: Health status and interactive dashboard.
   - `GET /health`: Comprehensive status, returning loaded feature names, active model algorithm, and validation error ranges (MAE in USD).
+  - `GET /download_sample`: Downloads a sample input template CSV file for batch testing.
   - `POST /predict`: Real-time JSON inference returning estimated price along with low/high bounds based on testing errors.
-  - `POST /predict_file`: Bulk predictions from an uploaded CSV file, returning the original table appended with a `PredictedPriceUSD` column as an attachment.
+  - `POST /predict_file`: Bulk predictions from an uploaded CSV file, returning the original table appended with a `PredictedPriceUSD` column as a downloadable file.
 - **Interactive API Documentation**: Runs automatically on `/docs` using Swagger UI.
 
 ---
@@ -35,17 +38,21 @@ It is designed to demonstrate:
 California-House-Price-Prediction-API/
 │
 ├── data/                    # Placeholder for dataset files
+│   └── .gitkeep
 │
 ├── model/                   # Serialized binaries and evaluation metrics
-│   ├── house_model.joblib   # Trained RandomForestRegressor model
+│   ├── house_model.joblib   # Trained RandomForestRegressor model (~57MB)
 │   ├── feature_names.joblib # Feature columns list (maintains ordering)
 │   └── metrics.json         # MAE and R2 scores generated from training
 │
 ├── explore.py               # Dataset exploration / EDA script
 ├── train.py                 # Training, evaluation, and serialization script
 ├── main.py                  # FastAPI application code
+├── index.html               # Minimal responsive light-theme dashboard UI
 ├── requirements.txt         # Package dependencies
 ├── sample_input.csv         # Sample batch CSV file for testing
+├── vercel.json              # Vercel serverless deployment configuration
+├── .gitignore               # Git untracked files definitions
 └── README.md                # Project documentation
 ```
 
@@ -70,7 +77,8 @@ Follow these steps to run the project locally on your machine.
 
 ### 1. Clone the Repository & Navigate to Project Directory
 ```bash
-cd "California-House-Price-Prediction-API"
+git clone https://github.com/Laxmikant143Mahi/HousePrice-Prediction.git
+cd "HousePrice-Prediction"
 ```
 
 ### 2. Create a Virtual Environment (Recommended)
@@ -122,9 +130,9 @@ Model training complete!
 
 [4/5] Evaluating model performance on test set...
 ---------------------------------------------
-Test Mean Absolute Error (MAE): 0.3275
-Test Mean Absolute Error (in USD): $32,754.26
-Test R² Score (Coefficient of Det.): 0.8051
+Test Mean Absolute Error (MAE): 0.3332
+Test Mean Absolute Error (in USD): $33,322.09
+Test R² Score (Coefficient of Det.): 0.8004
 ---------------------------------------------
 
 [5/5] Saving model and feature metadata...
@@ -177,12 +185,12 @@ FastAPI automatically generates interactive documentation for your API.
 #### Example JSON Response (Status Code: 200 OK)
 ```json
 {
-  "predicted_price": 454378.10,
-  "price_range_low": 421623.84,
-  "price_range_high": 487132.36
+  "predicted_price": 426579.30,
+  "price_range_low": 393257.21,
+  "price_range_high": 459901.39
 }
 ```
-*Note: The target value is scaled from unit fractions in the dataset back to actual USD currency. The low and high bounds are dynamically computed using the model's test MAE (`$32,754.26`).*
+*Note: The target value is scaled from unit fractions in the dataset back to actual USD currency. The low and high bounds are dynamically computed using the model's test MAE (`$33,322.09`).*
 
 ---
 
@@ -191,7 +199,7 @@ FastAPI automatically generates interactive documentation for your API.
 To predict values for multiple houses at once, upload a CSV file with headers matching our features.
 
 #### Batch Prediction Steps:
-1. Locate the [sample_input.csv](sample_input.csv) file inside the project directory.
+1. Locate the [sample_input.csv](sample_input.csv) file inside the project directory (or download it from the dashboard UI).
 2. In the Swagger UI `/docs`, expand the `POST /predict_file` endpoint.
 3. Click **"Try it out"**.
 4. Click **"Choose File"** and upload `sample_input.csv`.
@@ -219,9 +227,19 @@ Here is a summary of the 8 features used to predict the house price:
 
 ## How to Deploy (For Your Resume)
 
-Having a live deployment URL on your resume makes a massive difference! Here are the two easiest ways to deploy this API for free or low-cost:
+Having a live deployment URL on your resume makes a massive difference! Here are the easiest ways to deploy this API for free:
 
-### Option A: Deploying on Render (Free/Hobby Tier)
+### Option A: Deploying on Vercel (Free Serverless Tier)
+[Vercel](https://vercel.com/) is a serverless hosting platform that offers free hosting for hobby projects:
+1. **Commit Model Binaries**: Because Vercel's serverless environment is **read-only** at runtime, the application cannot run training scripts upon boot. **You must train the model locally first** and commit the `model/` directory containing `house_model.joblib`, `feature_names.joblib`, and `metrics.json` to GitHub.
+2. **Push to GitHub**: Initialize a Git repository, commit all files (including `vercel.json` and the trained `model/` folder), and push them to your GitHub repository.
+3. **Import to Vercel**:
+   - Go to your Vercel Dashboard and click **Add New > Project**.
+   - Select your connected GitHub repository and click **Import**.
+   - Vercel automatically detects the `vercel.json` file and handles the Python environment builds.
+4. **Deploy**: Click **Deploy**. Your FastAPI dashboard and API routes will be live 24/7 at `https://your-project-name.vercel.app`!
+
+### Option B: Deploying on Render (Free/Hobby Tier)
 [Render](https://render.com/) is a very popular cloud hosting service. You can deploy this FastAPI service in minutes:
 1. **Push to GitHub**: Initialize a Git repository, commit all files, and push them to a public GitHub repository.
 2. **Create a Web Service on Render**:
@@ -234,7 +252,7 @@ Having a live deployment URL on your resume makes a massive difference! Here are
 4. **Deploy**: Click **Create Web Service**. Your app will be live at `https://your-app-name.onrender.com`.
 *Note: Render's free tier spins down your application when it hasn't received traffic for 15 minutes. The first request after a sleep period might take ~1 minute to spin up.*
 
-### Option B: Deploying on Hugging Face Spaces (Free Tier)
+### Option C: Deploying on Hugging Face Spaces (Free Tier)
 [Hugging Face Spaces](https://huggingface.co/spaces) is the absolute best place to showcase Machine Learning portfolios. 
 1. Create a free Hugging Face account and navigate to Spaces > **Create new Space**.
 2. Name your space, select **Docker** as the SDK, and choose the **Blank** template.
@@ -250,16 +268,6 @@ Having a live deployment URL on your resume makes a massive difference! Here are
    ```
 4. Push your local files (including the Dockerfile) to the Hugging Face Space Git repository.
 5. Hugging Face will automatically build and run your Docker container. Your API and its interactive UI dashboard will be live 24/7!
-
-### Option C: Deploying on Vercel (Free Serverless Tier)
-[Vercel](https://vercel.com/) is a serverless hosting platform that offers free hosting for hobby projects:
-1. **Commit Model Binaries**: Because Vercel's serverless environment is **read-only** at runtime, the application cannot run training scripts upon boot. **You must train the model locally first** and commit the `model/` directory containing `house_model.joblib`, `feature_names.joblib`, and `metrics.json` to GitHub.
-2. **Push to GitHub**: Initialize a Git repository, commit all files (including `vercel.json` and the trained `model/` folder), and push them to your GitHub repository.
-3. **Import to Vercel**:
-   - Go to your Vercel Dashboard and click **Add New > Project**.
-   - Select your connected GitHub repository and click **Import**.
-   - Vercel automatically detects the `vercel.json` file and handles the Python environment builds.
-4. **Deploy**: Click **Deploy**. Your FastAPI dashboard and API routes will be live 24/7 at `https://your-project-name.vercel.app`!
 
 ---
 
