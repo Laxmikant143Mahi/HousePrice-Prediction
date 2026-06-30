@@ -1,6 +1,6 @@
 # California House Price Prediction API
 
-A production-ready, interview-friendly Machine Learning API that predicts median home values in California block groups. This project serves as an excellent reference for integrating scikit-learn models with FastAPI, featuring strict Pydantic V2 validation, complete Swagger UI integration, a modern mobile-responsive light-theme dashboard, and downloadable batch CSV prediction pipelines.
+A production-ready Machine Learning API that predicts median home values in California block groups. This project serves as an excellent reference for integrating scikit-learn models with FastAPI, featuring strict Pydantic V2 validation, complete Swagger UI integration, a modern mobile-responsive light-theme dashboard, and downloadable batch CSV prediction pipelines.
 
 ---
 
