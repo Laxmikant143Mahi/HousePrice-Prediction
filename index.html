@@ -301,8 +301,10 @@
         }
 
         .stat-card p {
-            font-size: 1.6rem;
+            font-size: 1.35rem;
             font-weight: 700;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .stat-card p.highlight {
@@ -721,7 +723,11 @@
                 const response = await fetch('/health');
                 if (response.ok) {
                     const data = await response.json();
-                    document.getElementById('stat-model').innerText = data.model_name;
+                    let modelName = data.model_name;
+                    if (modelName === "RandomForestRegressor") {
+                        modelName = "Random Forest";
+                    }
+                    document.getElementById('stat-model').innerText = modelName;
                     
                     const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
                     document.getElementById('stat-mae').innerText = fmt.format(data.average_error_mae_usd);
