@@ -1,0 +1,20 @@
+{
+    "model_name": "RandomForestRegressor",
+    "n_estimators": 100,
+    "random_state": 42,
+    "features": [
+        "MedInc",
+        "HouseAge",
+        "AveRooms",
+        "AveBedrms",
+        "Population",
+        "AveOccup",
+        "Latitude",
+        "Longitude"
+    ],
+    "metrics": {
+        "mean_absolute_error": 0.33322091312805663,
+        "mean_absolute_error_usd": 33322.09131280566,
+        "r2_score": 0.8003658517722642
+    }
+}

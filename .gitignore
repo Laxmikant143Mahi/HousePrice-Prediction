@@ -1,0 +1,48 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.project
+.pydevproject
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Pytest and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+pip-log.txt
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Machine Learning models
+# NOTE: We do NOT ignore the 'model/' directory here.
+# Vercel, Render, and Hugging Face serverless environments require
+# pre-trained model binaries to perform inference.
+# Make sure to commit 'model/house_model.joblib', 'model/feature_names.joblib', and 'model/metrics.json'.
